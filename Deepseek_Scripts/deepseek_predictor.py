@@ -11,12 +11,7 @@ import time # Import time for potential rate limiting/retries
 # ------------------------------------------------------------
 # Configuration and Constants
 # ------------------------------------------------------------
-# --- IMPORTANT SECURITY WARNING ---
-# Never hardcode API keys directly in your script like this,
-# especially if you plan to share it or check it into version control.
-# Use environment variables, configuration files, or secret management tools.
-# Replace with your actual API key or preferably load from a secure source.
-DEEPSEEK_API_KEY = "sk-bf14f88d01d44b568bb8140b9687b6eb" # Replace with your actual key
+DEEPSEEK_API_KEY = "" # Replace with your actual key
 
 # Corrected DeepSeek API Endpoint for chat completions
 DEEPSEEK_API_ENDPOINT = "https://api.deepseek.com/v1/chat/completions" # Corrected Endpoint

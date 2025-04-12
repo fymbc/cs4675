@@ -1,0 +1,10 @@
+Metric,Value
+Accuracy,0.8708708708708709
+Precision (Legit=1),0.9166666666666666
+Recall (Legit=1),0.831758034026465
+F1 Score (Legit=1),0.8721506442021804
+Precision (Phishing=0),0.8285163776493256
+Recall (Phishing=0),0.9148936170212766
+F1 Score (Phishing=0),0.8695652173913043
+False Positive Rate (FPR),0.0851063829787234
+False Negative Rate (FNR),0.16824196597353497
