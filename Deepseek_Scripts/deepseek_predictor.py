@@ -261,7 +261,7 @@ def main():
         # else: skip rows with missing URL or status silently
 
     # Limit to the first N samples for testing
-    sample_limit = 100 # Adjust as needed
+    sample_limit = 1000 # Adjust as needed
     samples = samples[:sample_limit]
     print(f"Prepared {len(samples)} valid samples for evaluation (limited to first {sample_limit}).")
 
@@ -365,6 +365,40 @@ def main():
     print(f"F1 Score (Phishing=0):        {f1_phish:.4f}")
     print(f"False Positive Rate (FPR):    {false_positive_rate:.4f} (Rate of actual Phishing classified as Legit)")
     print(f"False Negative Rate (FNR):    {false_negative_rate:.4f} (Rate of actual Legit classified as Phishing)")
+
+    results_filename = "results.csv"
+    print(f"\nSaving aggregate results to {results_filename}...")
+
+    # Prepare data for CSV using the calculated metric variables
+    results_data = [
+        {"Metric": "Sample Limit Attempted", "Value": sample_limit},
+        {"Metric": "Valid Predictions Obtained", "Value": len(valid_samples)},
+        {"Metric": "Accuracy", "Value": f"{acc:.4f}"},
+        {"Metric": "Precision (Legitimate=1)", "Value": f"{prec_legit:.4f}"},
+        {"Metric": "Recall (Legitimate=1)", "Value": f"{rec_legit:.4f}"},
+        {"Metric": "F1 Score (Legitimate=1)", "Value": f"{f1_legit:.4f}"},
+        {"Metric": "Precision (Phishing=0)", "Value": f"{prec_phish:.4f}"},
+        {"Metric": "Recall (Phishing=0)", "Value": f"{rec_phish:.4f}"},
+        {"Metric": "F1 Score (Phishing=0)", "Value": f"{f1_phish:.4f}"},
+        {"Metric": "True Negatives (TN - Actual Phish, Pred Phish)", "Value": tn},
+        {"Metric": "False Positives (FP - Actual Phish, Pred Legit)", "Value": fp},
+        {"Metric": "False Negatives (FN - Actual Legit, Pred Phish)", "Value": fn},
+        {"Metric": "True Positives (TP - Actual Legit, Pred Legit)", "Value": tp},
+        {"Metric": "False Positive Rate (FPR)", "Value": f"{false_positive_rate:.4f}"},
+        {"Metric": "False Negative Rate (FNR)", "Value": f"{false_negative_rate:.4f}"},
+    ]
+
+    try:
+        with open(results_filename, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ["Metric", "Value"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            writer.writerows(results_data) # Write all rows from the list of dicts
+        print(f"Aggregate results successfully saved to {results_filename}.")
+
+    except IOError as e:
+        print(f"Error writing aggregate results to {results_filename}: {e}")
 
     # 6. Group results into correct, false positive, and false negative.
     # Pass the valid original samples and the raw API predictions (y_pred_api) to group_results
