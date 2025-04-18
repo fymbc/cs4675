@@ -16,7 +16,7 @@ import google.generativeai as genai
 # ------------------------------------------------------------
 # CONFIGURATION
 # ------------------------------------------------------------
-GEMINI_API_KEY = "AIzaSyAw5r6BiqtSt9DirVWPkHcamped6FbIe_A"
+GEMINI_API_KEY = ""
 GENAI_MODEL = "gemini-1.5-pro-latest"
 SAMPLE_LIMIT = 1000
 FEVER_SPLIT = "labelled_dev"
