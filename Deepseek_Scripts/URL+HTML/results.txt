@@ -1,0 +1,25 @@
+Evaluated 97 prompts with valid API responses ('0' or '1').
+
+--- Evaluation Metrics (Positive Label = 1: Phishing) ---
+Accuracy: 0.9381
+Precision (Phishing): 0.8824
+Recall (Phishing): 0.9375
+F1 Score (Phishing): 0.9091
+
+--- Evaluation Metrics (Positive Label = 0: Not Phishing) ---
+Precision (Not Phishing): 0.9683
+Recall (Not Phishing): 0.9385
+F1 Score (Not Phishing): 0.9531
+
+Confusion Matrix (Rows: Actual, Columns: Predicted)
+                     Predicted Not Phishing (0)  Predicted Phishing (1)
+Actual Not Phishing (0): 61                    4                   
+Actual Phishing (1):     2                     30                  
+
+True Positive Rate (TPR/Recall-Phishing): 0.9375
+False Positive Rate (FPR):                0.0615
+True Negative Rate (TNR/Specificity):     0.9385
+False Negative Rate (FNR):                0.0625
+Group 'correct' results saved to 'correct_results.csv'.
+Group 'false_positive' results saved to 'false_positive_results.csv'.
+Group 'false_negative' results saved to 'false_negative_results.csv'.

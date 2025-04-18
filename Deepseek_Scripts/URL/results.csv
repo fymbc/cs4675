@@ -1,0 +1,16 @@
+Metric,Value
+Sample Limit Attempted,1000
+Valid Predictions Obtained,1000
+Accuracy,0.7190
+Precision (Legitimate=1),0.6543
+Recall (Legitimate=1),0.9962
+F1 Score (Legitimate=1),0.7898
+Precision (Phishing=0),0.9896
+Recall (Phishing=0),0.4064
+F1 Score (Phishing=0),0.5762
+"True Negatives (TN - Actual Phish, Pred Phish)",191
+"False Positives (FP - Actual Phish, Pred Legit)",279
+"False Negatives (FN - Actual Legit, Pred Phish)",2
+"True Positives (TP - Actual Legit, Pred Legit)",528
+False Positive Rate (FPR),0.5936
+False Negative Rate (FNR),0.0038
