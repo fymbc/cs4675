@@ -15,7 +15,9 @@ import matplotlib.pyplot as plt
 TOGETHER_API_KEY = ""
 LLAMA_MODEL = "meta-llama/Llama-3-8b-chat-hf"
 TOGETHER_URL = "https://api.together.xyz/v1/chat/completions"
+MAX_TOKENS = 10
 
+client = together.Llama(api_key=TOGETHER_API_KEY)
 # ------------------------------------------------------------
 # Utility Functions
 # ------------------------------------------------------------
