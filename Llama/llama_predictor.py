@@ -114,4 +114,3 @@ def save_metrics(y_true, y_pred, groups):
 if __name__ == "__main__":
     truths, preds, groupings = predict()
     save_metrics(truths, preds, groupings)
-
