@@ -155,7 +155,7 @@ def load_dataset():
         {"url": r["url"], "label": int(r["status"])}
         for _, r in df.iterrows()
         if isinstance(r["url"], str) and r["status"] in {0, 1}
-    ][:1000]
+    ][:1]
     return samples
 
 
