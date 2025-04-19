@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Phishing Link Detector (Demo)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        width: 300px;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      #result {
+        font-size: 18px;
+        margin-top: 10px;
+      }
+      button {
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+      }
+      .feedback {
+        margin-top: 15px;
+      }
+      .feedback button {
+        width: 48%;
+        margin-right: 4%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Phishing Detection</h1>
+    <input type="text" id="urlInput" placeholder="Enter URL to check" />
+    <button id="checkLink">Check Link</button>
+    <div id="result">Result will appear here...</div>
+
+    <!-- Feedback section that will appear after detection -->
+    <div id="feedback" class="feedback" style="display:none;">
+      <p>Was the detection accurate?</p>
+      <button id="feedbackYes">Yes</button>
+      <button id="feedbackNo">No</button>
+    </div>
+
+    <div id="thankYouMessage" style="display:none;">Thank you for your feedback!</div>
+    <div id="sorryMessage" style="display:none;">Sorry for the inconvenience, we are updating our model to understand that.</div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
