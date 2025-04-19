@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 # ------------------------------------------------------------
 # Configuration and Constants for Together AI LLaMA
 # ------------------------------------------------------------
-TOGETHER_API_KEY = ""  # Fill in your API key here
+TOGETHER_API_KEY = ""
 LLAMA_MODEL = "meta-llama/Llama-3-8b-chat-hf"
 TOGETHER_URL = "https://api.together.xyz/v1/chat/completions"
 
