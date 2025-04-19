@@ -1,0 +1,11 @@
+claim,true_label,anthropic,deepseek,gemini,openai,truth_ensemble
+Eric Church is an artist.,1,-1,1,1,1,1
+Harold Macmillan worked in politics.,1,-1,1,1,1,1
+Juventus F.C. rejected their traditional black-and-white-striped home uniform in 1903.,0,-1,-1,-1,-1,0
+Lucy Hale's first name is Karen.,1,-1,-1,-1,-1,0
+Qin dynasty ended around 300 BC.,0,-1,-1,-1,-1,0
+Wales has a large region rich in coal deposits.,1,-1,1,1,1,1
+Natasha Lyonne is not known as Natasha Bianca Lyonne Braunstein.,0,-1,-1,1,1,1
+Christian Gottlob Neefe was only a train conductor.,0,-1,-1,-1,-1,0
+"UNESCO's City of Literature program aims to promote the social, economic and cultural development of cities.",1,-1,1,1,1,1
+Linkin Park was on hiatus from 2000 to 2005.,0,-1,-1,-1,-1,0
