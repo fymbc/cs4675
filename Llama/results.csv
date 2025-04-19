@@ -1,0 +1,16 @@
+Confusion Matrix (Rows: Actual, Columns: Predicted)
+,Predicted Phishing (0),Predicted Legit (1)
+Actual Phishing (0),3920,945
+Actual Legit (1),512,4625
+
+--- Overall & Specific Metrics ---
+Metric,Value
+Accuracy,0.861
+Precision (Legitimate=1),0.8302
+Recall (Legitimate=1),0.9003
+F1 Score (Legitimate=1),0.8638
+Precision (Phishing=0),0.8841
+Recall (Phishing=0),0.8057
+F1 Score (Phishing=0),0.8429
+False Positive Rate (FPR),0.1717
+False Negative Rate (FNR),0.0997
