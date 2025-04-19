@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from llama_cpp import Llama
 
 # === CONFIGURATION ===
-PHISHING_DATASET_ID = "mohamedkhlief/phishing-dataset"
+PHISHING_DATASET_ID = "ealvaradob/phishing-dataset"
 PHISHING_FILE = "phishing_site_urls.csv"
 LOCAL_CSV_PATH = "./data/phishing_site_urls.csv"
 
