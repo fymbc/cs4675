@@ -1,0 +1,24 @@
+--- Evaluation Metrics (Positive Label = 1: Phishing) ---
+Accuracy: 0.8637
+
+Precision: 0.8083
+
+Recall: 1.0000
+
+F1 Score: 0.9200
+
+--- Evaluation Metrics (Positive Label
+Precision: 1.0000
+
+Recall: 0.8500
+
+F1 Score: 0.9173
+
+@: Not Phishing) ---
+
+Confusion Matrix (Rows: Actual, Columns: Predicted)
+Predicted Not Phishing (@) Predicted Phishing (1)
+Actual Not Phishing (@): 38 5
+Actual Phishing (1): 0 23
+False Positive Rate (FPR): 0.1500
+False Negative Rate (FNR): 0.0000
