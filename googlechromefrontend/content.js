@@ -1,11 +1,22 @@
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if (request.action === "checkURLAndHTML") {
-    let url = window.location.href;
-    let htmlContent = document.documentElement.outerHTML;  // Extract entire HTML content of the page
+console.log("✅ content.js loaded and waiting for message");
 
-    // Send the URL and HTML content to the background script for analysis
-    chrome.runtime.sendMessage({action: "checkUserURL", url: url, htmlContent: htmlContent}, function(response) {
-      console.log("URL + HTML Analysis Result: ", response.result);
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === "checkURLAndHTML") {
+    console.log("📥 Received checkURLAndHTML message");
+
+    const url = window.location.href;
+    const html = document.documentElement.outerHTML;
+
+    // Send data to background.js for analysis
+    chrome.runtime.sendMessage({
+      action: "checkUserURL",
+      url: url,
+      html: html
+    }, function (response) {
+      console.log("📤 Sent to background, received response:", response);
+      sendResponse(response); // ✅ SEND BACK TO POPUP
     });
+
+    return true; // ✅ Tell Chrome this will be async
   }
 });

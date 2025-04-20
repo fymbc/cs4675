@@ -7,14 +7,12 @@ Recall: 1.0000
 
 F1 Score: 0.9000
 
---- Evaluation Metrics (Positive Label
+--- Evaluation Metrics (Positive Label = 0: Not Phishing) ---
 Precision: 1.0000
 
 Recall: 0.8800
 
 F1 Score: 0.9362
-
-@: Not Phishing) ---
 
 Confusion Matrix (Rows: Actual, Columns: Predicted)
 Predicted Not Phishing (@) Predicted Phishing (1)
