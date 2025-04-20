@@ -1,0 +1,15 @@
+Metric,Value
+Task,phish
+Num_Valid_Samples,100
+Num_Total_Samples,100
+Accuracy,0.0900
+Prec(1),0.0667
+Rec(1),0.0577
+F1(1),0.0619
+Prec(0),0.1091
+Rec(0),0.1250
+F1(0),0.1165
+TN,6
+FP,42
+FN,49
+TP,3
