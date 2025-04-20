@@ -1,1 +1,14 @@
+metric,value
+samples_evaluated,1000
+accuracy,0.8460
+prec_true,0.8691
+recall_true,0.8162
+f1_true,0.8433
+prec_false,0.8555
+recall_false,0.9038
+f1_false,0.8508
+TN,490
+FP,35
+FN,71
+TP,401
 
