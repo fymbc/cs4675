@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Phishing Link Detector (Demo)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        width: 300px;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      #result {
+        font-size: 18px;
+        margin-top: 10px;
+      }
+      button {
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Detection Tool</h1>
+
+    <!-- Text Input for Truthfulness or URL+HTML -->
+    <input type="text" id="textInput" placeholder="Enter text to check" />
+    <button id="checkText">Check Text</button>
+
+    <button id="checkURLAndHTML">Check URL + HTML</button>
+
+    <div id="result">Result will appear here...</div>
+    
+    <script src="popup.js"></script>
+  </body>
+</html>
