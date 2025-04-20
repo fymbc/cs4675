@@ -1,0 +1,15 @@
+Metric,Value
+Task,truth
+Num_Valid_Samples,100
+Num_Total_Samples,100
+Accuracy,0.9100
+Prec(1),0.9524
+Rec(1),0.8511
+F1(1),0.8989
+Prec(0),0.8793
+Rec(0),0.9623
+F1(0),0.9189
+TN,51
+FP,2
+FN,7
+TP,40
