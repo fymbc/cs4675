@@ -22,7 +22,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     return true;  // To indicate asynchronous response
   }
+  if (request.action === "checkUserURLOnly") {
+    // Send just the URL to the backend
+    fetch("http://localhost:8000/analyze-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: request.url })
+    })
+    .then(res => res.json())
+    .then(data => {
+      sendResponse({
+        url: data.url,
+        result: data.ensemble_result,
+        per_model_raw: data.per_model_raw
+      });
+    })
+    .catch(err => {
+      console.error("Error:", err);
+      sendResponse({ error: "Error occurred. Please try again." });
+    });
   
+    return true; // Async response
+  }
   if (request.action === "checkUserURL") {
     fetch("http://localhost:8000/analyze-url-html", {
       method: "POST",

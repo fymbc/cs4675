@@ -13,6 +13,31 @@ document.getElementById('checkText').addEventListener('click', function() {
   });
 });
 
+document.getElementById('checkURLOnly').addEventListener('click', function () {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const tab = tabs[0];
+    const url = tab.url;
+
+    // Skip protected pages
+    if (url.startsWith("chrome://") || url.startsWith("chrome-extension://") || url.startsWith("about:") || url.startsWith("edge://")) {
+      document.getElementById('result').textContent = "Cannot scan Chrome internal pages.";
+      return;
+    }
+
+    // Send only the URL to the background script
+    chrome.runtime.sendMessage({ action: 'checkUserURLOnly', url: url }, function (response) {
+      if (chrome.runtime.lastError || !response) {
+        document.getElementById('result').textContent = "Error analyzing URL.";
+        console.error("URL-only error:", chrome.runtime.lastError?.message);
+        return;
+      }
+
+      console.log("✅ URL-only analysis result:", response);
+      document.getElementById('result').textContent = `URL Result: ${response.result}`;
+    });
+  });
+});
+
 document.getElementById('checkURLAndHTML').addEventListener('click', function () {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     const tab = tabs[0];
