@@ -32,7 +32,7 @@ document.getElementById('checkURLOnly').addEventListener('click', function () {
         return;
       }
 
-      console.log("✅ URL-only analysis result:", response);
+      console.log("URL-only analysis result:", response);
       document.getElementById('result').textContent = `URL Result: ${response.result}`;
     });
   });
@@ -70,12 +70,12 @@ document.getElementById('checkURLAndHTML').addEventListener('click', function ()
             console.log("⏳ Retrying message after injection...");
             chrome.tabs.sendMessage(tabId, { action: "checkURLAndHTML" }, function (response2) {
               if (chrome.runtime.lastError || !response2) {
-                console.error("❌ Message failed after injection:", chrome.runtime.lastError?.message);
+                console.error("Message failed after injection:", chrome.runtime.lastError?.message);
                 document.getElementById('result').textContent = "Error: Could not reach content script.";
                 return;
               }
           
-              console.log("✅ Got response from injected content script", response2);
+              console.log("Got response from injected content script", response2);
               document.getElementById('result').textContent = `Result: ${response2.result}`;
             });
           }, 300); // Delay for listener registration
