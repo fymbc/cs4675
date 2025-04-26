@@ -6,7 +6,7 @@ from tqdm import tqdm
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
-import requests
+import together
 import matplotlib.pyplot as plt
 
 # ------------------------------------------------------------
@@ -14,10 +14,13 @@ import matplotlib.pyplot as plt
 # ------------------------------------------------------------
 TOGETHER_API_KEY = ""
 LLAMA_MODEL = "meta-llama/Llama-3-8b-chat-hf"
-TOGETHER_URL = "https://api.together.xyz/v1/chat/completions"
 MAX_TOKENS = 10
 
-client = together.Llama(api_key=TOGETHER_API_KEY)
+# Set the API key for Together
+
+
+together.api_key = TOGETHER_API_KEY
+
 # ------------------------------------------------------------
 # Utility Functions
 # ------------------------------------------------------------
@@ -28,23 +31,17 @@ def build_single_prompt(item):
     )
 
 def call_llama_api(prompt_content):
-    headers = {
-        "Authorization": f"Bearer {TOGETHER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": LLAMA_MODEL,
-        "messages": [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt_content}
-        ],
-        "temperature": 0.0,
-        "max_tokens": 10
-    }
     try:
-        response = requests.post(TOGETHER_URL, headers=headers, json=payload)
-        result = response.json()
-        return result['choices'][0]['message']['content'].strip()
+        response = together.chat.completions.create(
+            model=LLAMA_MODEL,
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt_content}
+            ],
+            temperature=0.0,
+            max_tokens=10,
+        )
+        return response.choices[0].message.content.strip()
     except Exception as e:
         print("LLaMA API call failed:", e)
         return None
