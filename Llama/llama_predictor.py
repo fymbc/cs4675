@@ -51,11 +51,6 @@ def call_llama_api(prompt_content):
         print("LLaMA API call failed:", e)
         return None, None
 
-def fake_llama_response(prompt_content):
-    # Simulate fake response and fake latency
-    time.sleep(random.uniform(0.5, 2.0))
-    return random.choice(["0", "1"]), random.uniform(0.5, 2.0)
-
 def plot_latency_bars(latencies, query_ids):
     plt.figure(figsize=(10, 6))
     plt.bar(query_ids, latencies, color='skyblue')
