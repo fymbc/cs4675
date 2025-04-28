@@ -91,13 +91,13 @@ def main():
 
     print(f"Loading FEVER split '{FEVER_SPLIT}'…")
     ds = load_dataset(
-    "fever",                # dataset name
-    "v1.0",                 # pick the config (v1.0 or v2.0)
-    split=FEVER_SPLIT,      # e.g. "validation"
-    trust_remote_code=True  # so it won’t prompt you again
+    "fever",                
+    "v1.0",                 
+    split=FEVER_SPLIT,      
+    trust_remote_code=True  
     )
 
-    # Filter to only SUPPORTS / REFUTES
+    # filter to only SUPPORTS / REFUTES
     df = pd.DataFrame(ds)
     df = df[df["label"].isin(["SUPPORTS", "REFUTES"])]
     df["true_label"] = df["label"].map({
