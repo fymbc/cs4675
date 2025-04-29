@@ -1,3 +1,4 @@
+# Imports
 import math
 import pandas as pd
 import csv
@@ -9,31 +10,24 @@ from kagglehub import KaggleDatasetAdapter
 import google.generativeai as genai
 import matplotlib.pyplot as plt
 
-# ------------------------------------------------------------
-# Configuration and Constants for Gemini
-# ------------------------------------------------------------
+# Input your API key here (Redacted from codebase)
 GEMINI_API_KEY = ""
-GENAI_MODEL = "gemini-1.5-pro-latest"
+GENAI_MODEL = "gemini-1.5-pro-latest" # This was the model used for our tests
 MAX_OUTPUT_TOKENS = 10
 
-# Configure Gemini client
+# Specific gemini config
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(GENAI_MODEL)
 
-# ------------------------------------------------------------
-# Utility Functions
-# ------------------------------------------------------------
+# Prompting, specifically for URL ONLY cases.
 def build_single_prompt(item):
     return (
         f"Given this URL: {item['url']}, determine if it is a phishing website or not. "
         "ONLY OUTPUT 1 (PHISHING) OR 0 (NOT PHISHING). DO NOT WRITE ANYTHING ELSE."
     )
 
+# Calls Gemini with the created prompt above with each of the URLS.
 def call_gemini_api(prompt_content):
-    """
-    Sends a prompt to the Gemini API using GenerativeModel.
-    Returns the model's text output stripped to '0' or '1'.
-    """
     try:
         response = model.generate_content(prompt_content)
         if response and response.text:
@@ -42,6 +36,7 @@ def call_gemini_api(prompt_content):
         print("Gemini API call failed:", e)
     return None
 
+# Groups the results into correct, false positive, or false negative.
 def group_results(samples, predictions):
     grouped = {"correct": [], "false_positive": [], "false_negative": []}
     for sample, api_pred in zip(samples, predictions):
@@ -67,6 +62,7 @@ def group_results(samples, predictions):
             grouped["false_negative"].append(result)
     return grouped
 
+# Writes all the results to csv form for convenience 
 def write_grouped_results_to_csv(grouped_results):
     for group, items in grouped_results.items():
         fn = f"{group}_results.csv"
@@ -83,11 +79,9 @@ def write_grouped_results_to_csv(grouped_results):
                 })
         print(f"Saved {group} → {fn}")
 
-# ------------------------------------------------------------
-# Main Script
-# ------------------------------------------------------------
 def main():
-    print("Loading dataset from KaggleHub…")
+    # Used an phishing URL dataset from KaggleHub to test each of the models
+    print("Loading dataset from KaggleHub.")
     try:
         df = kagglehub.load_dataset(
             KaggleDatasetAdapter.PANDAS,
@@ -100,14 +94,18 @@ def main():
 
     print(f"Total rows: {len(df)}")
     if not {"url", "status"}.issubset(df.columns):
-        raise ValueError("Dataset must have 'url' and 'status' columns")
+        raise ValueError("The dataset doesn't have 'url' and 'status' columns")
 
+    
     df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+
     samples = [
+
         {"url": r["url"], "label": int(r["status"])}
         for _, r in df.iterrows()
         if isinstance(r["url"], str) and r["status"] in {0, 1}
-    ][:1000]
+    ][:1000] # ***IMPORTANT***: This determines how many URLs to run the model on (As shown, we did 1000).
+
     print(f"Prepared {len(samples)} samples.")
 
     raw_preds, true_labels = [], []
@@ -138,11 +136,13 @@ def main():
     fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
     fnr = fn / (fn + tp) if (fn + tp) > 0 else 0
 
+    # Printing all the metrics for convenience
     print(f"Accuracy: {acc:.4f}")
     print(f"Legit→ Prec {prec1:.4f}, Rec {rec1:.4f}, F1 {f11:.4f}")
     print(f"Phish→ Prec {prec0:.4f}, Rec {rec0:.4f}, F1 {f10:.4f}")
     print(f"FPR: {fpr:.4f}, FNR: {fnr:.4f}")
 
+    # All calculated metrics, used to compare performance.
     metrics = {
         "Accuracy": acc,
         "Precision (Legit=1)": prec1,
@@ -157,6 +157,7 @@ def main():
     pd.DataFrame(metrics.items(), columns=["Metric", "Value"]).to_csv("metrics_results.csv", index=False)
     print("Metrics saved to metrics_results.csv")
 
+    # Confusion Matrix to visualize the results (Some created directly like here, while in other scripts it was created using the CSV file instead).
     cm = [[tn, fp], [fn, tp]]
     fig, ax = plt.subplots(figsize=(7, 6))
     im = ax.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)

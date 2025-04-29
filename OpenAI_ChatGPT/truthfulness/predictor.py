@@ -1,3 +1,4 @@
+#Import
 import os
 import time
 import pandas as pd
@@ -11,23 +12,17 @@ from sklearn.metrics import (
 )
 from tqdm import tqdm
 import csv
-import google.generativeai as genai
+import openai
 
-# ------------------------------------------------------------
-# CONFIGURATION
-# ------------------------------------------------------------
-GEMINI_API_KEY = ""
-GENAI_MODEL = "gemini-1.5-pro-latest"
+OPENAI_API_KEY = ""  #Input API Key Here (redacted in codebase)
+OPENAI_MODEL = "gpt-4o-mini"
 SAMPLE_LIMIT = 1000
 FEVER_SPLIT = "labelled_dev"
 
-# Gemini setup
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel(GENAI_MODEL)
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
-# ------------------------------------------------------------
-# Utility Functions
-# ------------------------------------------------------------
+
+# Prompt which is used for Truthfulness
 def build_prompt(claim: str) -> str:
     return (
         f"Given the following statement:\n\n\"{claim}\"\n\n"
@@ -35,18 +30,32 @@ def build_prompt(claim: str) -> str:
         "ONLY OUTPUT 1 (TRUE) OR 0 (FALSE). DO NOT WRITE ANYTHING ELSE."
     )
 
-def call_gemini(prompt: str) -> int:
+def call_openai_api(prompt_content):
     try:
-        response = model.generate_content(prompt)
-        if response and response.text:
-            text = response.text.strip()
-            if text == "1":
+        response = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=[
+                {
+                    "role": "system", 
+                    "content": "You are a fact-checking assistant. Your sole output should be the digit 0 or 1."
+                },
+                {"role": "user", "content": prompt_content}
+            ],
+            max_tokens=10,
+            temperature=0.1
+        )
+        if hasattr(response, "choices") and response.choices:
+            content = response.choices[0].message.content.strip()
+
+            if content == "1":
                 return 1
-            elif text == "0":
+            
+            elif content == "0":
                 return 0
+            
         return -1
     except Exception as e:
-        print("Gemini API error:", e)
+        print(f"Request failed,: {e}")
         return -1
 
 def group_and_save(samples, y_true, y_pred):
@@ -70,10 +79,9 @@ def group_and_save(samples, y_true, y_pred):
                 writer.writerow([c, l, p])
         print(f"  • Saved {len(items)} examples to {fname}")
 
-# ------------------------------------------------------------
-# MAIN
-# ------------------------------------------------------------
+
 def main():
+    #The truthfulness dataset
     print(f"Loading FEVER split '{FEVER_SPLIT}'…")
     ds = load_dataset("fever", "v1.0", split=FEVER_SPLIT, trust_remote_code=True)
     df = pd.DataFrame(ds)
@@ -87,9 +95,9 @@ def main():
     print(f"  • Evaluating {len(df)} statements…")
 
     y_true, y_pred = [], []
-    for i, claim in enumerate(tqdm(df["claim"], desc="Gemini calls")):
+    for i, claim in enumerate(tqdm(df["claim"], desc="OpenAI calls")):
         prompt = build_prompt(claim)
-        pred = call_gemini(prompt)
+        pred = call_openai_api(prompt)
         y_pred.append(pred)
         y_true.append(df.loc[i, "true_label"])
         time.sleep(0.1)
@@ -99,6 +107,7 @@ def main():
     y_pred_val = [y_pred[i] for i in valid_idx]
     claims_val = [df["claim"].iloc[i] for i in valid_idx]
 
+    
     print("\nComputing metrics…")
     acc = accuracy_score(y_true_val, y_pred_val)
     prec1 = precision_score(y_true_val, y_pred_val, pos_label=1, zero_division=0)
@@ -109,39 +118,34 @@ def main():
     f10 = f1_score(y_true_val, y_pred_val, pos_label=0, zero_division=0)
 
     tn, fp, fn, tp = confusion_matrix(y_true_val, y_pred_val, labels=[0, 1]).ravel()
+    
+    # All of the stats printed out
     print(f"""
---- Results (n={len(y_true_val)}) ---
-Accuracy:               {acc:.4f}
-Precision (TRUE=1):     {prec1:.4f}
-Recall (TRUE=1):        {rec1:.4f}
-F1 (TRUE=1):            {f11:.4f}
+    --- Results (n={len(y_true_val)}) ---
+    Accuracy:               {acc:.4f}
+    Precision (TRUE=1):     {prec1:.4f}
+    Recall (TRUE=1):        {rec1:.4f}
+    F1 (TRUE=1):            {f11:.4f}
 
-Precision (FALSE=0):    {prec0:.4f}
-Recall (FALSE=0):       {rec0:.4f}
-F1 (FALSE=0):           {f10:.4f}
+    Precision (FALSE=0):    {prec0:.4f}
+    Recall (FALSE=0):       {rec0:.4f}
+    F1 (FALSE=0):           {f10:.4f}
 
-Confusion Matrix:
-               Pred=F  Pred=T
-Actual=F ({tn+fp}):     {tn:<5} {fp:<5}
-Actual=T ({fn+tp}):     {fn:<5} {tp:<5}
-""")
+    Confusion Matrix:
+                Pred=F  Pred=T
+    Actual=F ({tn+fp}):     {tn:<5} {fp:<5}
+    Actual=T ({fn+tp}):     {fn:<5} {tp:<5}
+    """)
 
     with open("results.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["metric", "value"])
-        for k, v in [
-            ("samples_evaluated", len(y_true_val)),
-            ("accuracy", f"{acc:.4f}"),
-            ("prec_true", f"{prec1:.4f}"),
-            ("recall_true", f"{rec1:.4f}"),
-            ("f1_true", f"{f11:.4f}"),
-            ("prec_false", f"{prec0:.4f}"),
-            ("recall_false", f"{rec0:.4f}"),
-            ("f1_false", f"{f10:.4f}"),
-            ("TN", tn), ("FP", fp), ("FN", fn), ("TP", tp),
+        for k, v in [("samples_evaluated", len(y_true_val)),("accuracy", f"{acc:.4f}"),("prec_true", f"{prec1:.4f}"),("recall_true", f"{rec1:.4f}"),
+                    ("f1_true", f"{f11:.4f}"),("prec_false", f"{prec0:.4f}"), ("recall_false", f"{rec0:.4f}"),
+                    ("f1_false", f"{f10:.4f}"),("TN", tn), ("FP", fp), ("FN", fn), ("TP", tp),
         ]:
             writer.writerow([k, v])
-    print("Saved aggregate metrics to results.csv")
+    print("Metrics have beens saved to results.csv")
     group_and_save(claims_val, y_true_val, y_pred_val)
 
 if __name__ == "__main__":

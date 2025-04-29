@@ -1,3 +1,4 @@
+# Imports
 import google.generativeai as genai
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
@@ -7,19 +8,14 @@ import time
 import zipfile
 import os
 
-# ------------------------------------------------------------
-# Configuration
-# ------------------------------------------------------------
-GEMINI_API_KEY = ""
+GEMINI_API_KEY = "" # Put in an API key here (Redacted from database)
 GENAI_MODEL = "gemini-1.5-pro-latest"
 MAX_OUTPUT_TOKENS = 10
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(GENAI_MODEL)
 
-# ------------------------------------------------------------
-# Utility Functions
-# ------------------------------------------------------------
+# Calls gemini given the prompt
 def call_gemini_api(prompt_content, max_retries=5):
     for attempt in range(max_retries):
         try:
@@ -32,6 +28,7 @@ def call_gemini_api(prompt_content, max_retries=5):
     print("Max retries exceeded for Gemini API.")
     return None
 
+# Groups the results from the Gemini call into 3 catagories: Correct, False Positive, False Negative
 def group_results(samples, predictions):
     grouped = {"correct": [], "false_positive": [], "false_negative": []}
     for sample, api_pred in zip(samples, predictions):
@@ -51,6 +48,7 @@ def group_results(samples, predictions):
             grouped["false_negative"].append(result)
     return grouped
 
+# This function structures the results and sends it into csv files for easy use
 def write_grouped_results_to_csv(grouped_results):
     for group, items in grouped_results.items():
         filename = f"{group}_results.csv"
@@ -62,11 +60,10 @@ def write_grouped_results_to_csv(grouped_results):
                 writer.writerow(item)
         print(f"Group '{group}' results saved to '{filename}'.")
 
-# ------------------------------------------------------------
-# Main
-# ------------------------------------------------------------
+
 def main():
-    print("Unzipping and loading prompts from output_100.zip...")
+    # For reference, output_100.zip is the file which contains the 100 examples of url + html used on each model for evaluation.
+    print("Unzip and load output_100.zip.")
 
     try:
         with zipfile.ZipFile("output_100.zip", 'r') as zip_ref:
@@ -75,7 +72,7 @@ def main():
         with open(filepath, "r") as file:
             lines = file.readlines()
     except FileNotFoundError:
-        print("File 'output_100.zip' or 'output_100.txt' not found.")
+        print("'output_100.zip'/'output_100.txt' not found. Add it in before running the script again.")
         return
 
     prompts = []
@@ -96,6 +93,7 @@ def main():
     print(f"Loaded {len(prompts)} valid prompts.")
 
     raw_api_predictions = []
+
     for prompt in tqdm(prompts, desc="Querying Gemini"):
         formatted_prompt = (
             f"Given the following input, determine if it is a phishing website or not:\n"
@@ -122,6 +120,7 @@ def main():
     y_pred_mapped = [raw_api_predictions[i] for i in valid_indices]
     y_true_mapped = [int(ground_truth_labels[i]) for i in valid_indices]
 
+    # Metrics printed out once the script completes running
     print("\n--- Evaluation Metrics (Phishing = 1) ---")
     acc = accuracy_score(y_true_mapped, y_pred_mapped)
     prec = precision_score(y_true_mapped, y_pred_mapped, pos_label=1, zero_division=0)

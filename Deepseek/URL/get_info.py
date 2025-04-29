@@ -3,18 +3,16 @@ import pandas as pd
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
 
-# Use the Kaggle dataset filename as published (do not use a full local path)
 file_path = "new_data_urls.csv"
 
-# Load the dataset from Kaggle using KaggleHub.
-# Ensure that your Kaggle API credentials are set up properly.
+
 df = kagglehub.load_dataset(
     KaggleDatasetAdapter.PANDAS,
     "harisudhan411/phishing-and-legitimate-urls",
     file_path,
 )
 
-# Display total number of URLs loaded
+# Total number of URLs loaded
 print("Total URLs in dataset:", len(df))
 
 
@@ -27,20 +25,18 @@ def estimate_tokens(text):
     return max(math.ceil(len(text) * 0.3), 1)
 
 
-# Calculate tokens for each URL in the dataset.
+# Calc tokens for each URL.
 df['tokens'] = df['url'].apply(estimate_tokens)
 
-# Deepseek pricing assumption:
-# For deepseek-chat with standard pricing (cache hit), the cost is $0.07 per 1,000,000 tokens.
+# Deepseek pricing
 cost_per_token = 0.135 / 1_000_000
 
-# Compute the cost per URL based on its token count.
 df['cost_usd'] = df['tokens'] * cost_per_token
 
-# Calculate totals.
+# Calc totals.
 total_tokens = df['tokens'].sum()
 total_cost = df['cost_usd'].sum()
 
-# Print the aggregated results.
+# Print results.
 print("\nTotal tokens required to process all URLs:", total_tokens)
 print("Total estimated cost to process all URLs with Deepseek (cache hit pricing): ${:.8f}".format(total_cost))
