@@ -1,5 +1,22 @@
 anthropic
-kagglehub
+openai
+google-generativeai
+requests
+
+
+fastapi
+uvicorn
+python-multipart
+pydantic
+fastapi[all]   # (for CORS support, etc.)
+
+
 pandas
 scikit-learn
+numpy
 tqdm
+
+
+kagglehub
+
+python-dotenv

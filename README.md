@@ -37,3 +37,10 @@ An evaluation on the effectiveness of 5 LLMs and a weighted hybrid ensemble of t
 - **Google Gemini 1.5 Pro**
 - **OpenAI GPT-4o-mini**
 - **Meta Llama-3 8B Chat**
+
+## Setup
+
+1. Make sure you have **Python 3.10+** and **pip** installed.
+2. Install project dependencies:
+   ```bash pip install -r requirements.txt```
+3. Run ```uvicorn app.main:app --reload``` to start backend server which will start a localhost on port 8000
