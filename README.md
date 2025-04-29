@@ -32,9 +32,8 @@ An evaluation on the effectiveness of 5 LLMs and a weighted hybrid ensemble of t
 - **Output:** Classify as `"PHISHING"` or `"LEGITIMATE"`
 
 ### 5 Large Language Models Evaluated
-|:------|
-| **Anthropic Claude-3.5 Sonnet** |
-| **DeepSeek Chat** |
-| **Google Gemini 1.5 Pro** |
-| **OpenAI GPT-4o-mini** |
-| **Meta Llama-3 8B Chat** |
+- **Anthropic Claude-3.5 Sonnet**
+- **DeepSeek Chat**
+- **Google Gemini 1.5 Pro**
+- **OpenAI GPT-4o-mini**
+- **Meta Llama-3 8B Chat**
