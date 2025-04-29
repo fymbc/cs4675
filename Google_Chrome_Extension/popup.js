@@ -1,93 +1,117 @@
-document.getElementById('checkText').addEventListener('click', function() {
-  const text = document.getElementById('textInput').value.trim();
+// ───────────────────────────────────────────────────────────
+// popup.js — UI logic & client-side latency tables
+// ───────────────────────────────────────────────────────────
 
-  if (text === "") {
-    document.getElementById('result').textContent = "Please enter some text.";
+/* helper — pretty-print metrics */
+function logTable(response, overallStart) {
+  if (!response) return;
+
+  const t_total               = Date.now() - overallStart;
+  const t_background_to_popup = Date.now() - response.metrics.sentAt;
+  const m                     = response.metrics;
+
+  console.table({
+    'T_content_to_background (ms)': (m.t_content_to_background ?? 0).toFixed(2),
+    'T_background_to_backend (ms)': m.t_background_to_backend.toFixed(2),
+    'T_backend_to_background (ms)': m.t_backend_to_background.toFixed(2),
+    'T_background_to_popup (ms)':   t_background_to_popup.toFixed(2),
+    'T_total (ms)':                 t_total.toFixed(2),
+  });
+
+  return t_total;
+}
+
+/* ───────────────────────── Truthfulness button ─────────────────────────── */
+document.getElementById('checkText').addEventListener('click', () => {
+  const text = document.getElementById('textInput').value.trim();
+  if (!text) {
+    document.getElementById('result').textContent = 'Please enter some text.';
     return;
   }
 
-  // Send the entered text to the background script for analysis
-  chrome.runtime.sendMessage({ action: 'checkUserText', text: text }, function(response) {
-    // Show the result of the truthfulness detection
-    document.getElementById('result').textContent = `Result: ${response.result}`;
-  });
-});
+  const overallStart = Date.now();
 
-document.getElementById('checkURLOnly').addEventListener('click', function () {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    const tab = tabs[0];
-    const url = tab.url;
-
-    // Skip protected pages
-    if (url.startsWith("chrome://") || url.startsWith("chrome-extension://") || url.startsWith("about:") || url.startsWith("edge://")) {
-      document.getElementById('result').textContent = "Cannot scan Chrome internal pages.";
+  chrome.runtime.sendMessage({ action: 'checkUserText', text }, response => {
+    if (chrome.runtime.lastError || !response) {
+      document.getElementById('result').textContent = 'Error.';
+      console.error('Truth error:', chrome.runtime.lastError?.message);
       return;
     }
 
-    // Send only the URL to the background script
-    chrome.runtime.sendMessage({ action: 'checkUserURLOnly', url: url }, function (response) {
+    const t_total = logTable(response, overallStart);
+    document.getElementById('result').textContent =
+      `Result: ${response.result}  ⏱ ${t_total.toFixed(1)} ms`;
+  });
+});
+
+/* ───────────────────────── URL-only button ─────────────────────────────── */
+document.getElementById('checkURLOnly').addEventListener('click', () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    const { url } = tabs[0];
+
+    if (/^(chrome|chrome-extension|about|edge):\/\//.test(url)) {
+      document.getElementById('result').textContent = 'Cannot scan Chrome internal pages.';
+      return;
+    }
+
+    const overallStart = Date.now();
+
+    chrome.runtime.sendMessage({ action: 'checkUserURLOnly', url }, response => {
       if (chrome.runtime.lastError || !response) {
-        document.getElementById('result').textContent = "Error analyzing URL.";
-        console.error("URL-only error:", chrome.runtime.lastError?.message);
+        document.getElementById('result').textContent = 'Error analyzing URL.';
+        console.error('URL-only error:', chrome.runtime.lastError?.message);
         return;
       }
 
-      console.log("URL-only analysis result:", response);
-      document.getElementById('result').textContent = `URL Result: ${response.result}`;
+      const t_total = logTable(response, overallStart);
+      document.getElementById('result').textContent =
+        `URL Result: ${response.result}  ⏱ ${t_total.toFixed(1)} ms`;
     });
   });
 });
 
-document.getElementById('checkURLAndHTML').addEventListener('click', function () {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    const tab = tabs[0];
-    const tabId = tab.id;
+/* ───────────────────────── URL + HTML button ───────────────────────────── */
+document.getElementById('checkURLAndHTML').addEventListener('click', () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    const { id: tabId, url } = tabs[0];
 
-    // Don't try to inject into restricted Chrome pages
-    if (tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://") || tab.url.startsWith("about:") || tab.url.startsWith("edge://")) {
-      document.getElementById('result').textContent = "Cannot scan Chrome internal pages.";
+    if (/^(chrome|chrome-extension|about|edge):\/\//.test(url)) {
+      document.getElementById('result').textContent = 'Cannot scan Chrome internal pages.';
       return;
     }
 
-    // Attempt to send message to content script
-    chrome.tabs.sendMessage(tabId, { action: "checkURLAndHTML" }, function (response) {
-      if (chrome.runtime.lastError) {
-        console.warn("Content script not injected, trying to inject manually...");
+    const overallStart = Date.now();          // master clock
 
-        // Try injecting it manually using scripting API
-        chrome.scripting.executeScript({
-          target: { tabId: tabId },
-          files: ['content.js']
-        }, () => {
+    /* send message (with fallback injection) */
+    const pingContent = () => chrome.tabs.sendMessage(
+      tabId,
+      { action: 'checkURLAndHTML', overallStart },
+      response => {
+        if (chrome.runtime.lastError || !response) {
+          console.warn('Content script not present:', chrome.runtime.lastError?.message);
+          injectThenRetry();
+          return;
+        }
+        const t_total = logTable(response, overallStart);
+        document.getElementById('result').textContent =
+          `Result: ${response.result}  ⏱ ${t_total.toFixed(1)} ms`;
+      }
+    );
+
+    const injectThenRetry = () => {
+      chrome.scripting.executeScript(
+        { target: { tabId }, files: ['content.js'] },
+        () => {
           if (chrome.runtime.lastError) {
-            console.error("Script injection failed:", chrome.runtime.lastError.message);
-            document.getElementById('result').textContent = "Error: Unable to inject content script.";
+            console.error('Script injection failed:', chrome.runtime.lastError.message);
+            document.getElementById('result').textContent = 'Error: Unable to inject content script.';
             return;
           }
+          setTimeout(pingContent, 300); // give listener time to register
+        }
+      );
+    };
 
-          // wait before retrying message (give content.js time to initialize)
-          setTimeout(() => {
-            console.log("⏳ Retrying message after injection...");
-            chrome.tabs.sendMessage(tabId, { action: "checkURLAndHTML" }, function (response2) {
-              if (chrome.runtime.lastError || !response2) {
-                console.error("Message failed after injection:", chrome.runtime.lastError?.message);
-                document.getElementById('result').textContent = "Error: Could not reach content script.";
-                return;
-              }
-          
-              console.log("Got response from injected content script", response2);
-              document.getElementById('result').textContent = `Result: ${response2.result}`;
-            });
-          }, 300); // Delay for listener registration
-        });
-      } else {
-        // Content script already present and responded
-        document.getElementById('result').textContent = `Result: ${response.result}`;
-      }
-    });
+    pingContent();
   });
 });
-
-
-  
-  

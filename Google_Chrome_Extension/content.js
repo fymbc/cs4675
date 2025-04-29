@@ -1,22 +1,28 @@
-console.log("✅ content.js loaded and waiting for message");
+// ───────────────────────────────────────────────────────────
+// content.js — runs in the web page, extracts URL + HTML
+// ───────────────────────────────────────────────────────────
+console.log('✅ content.js loaded');
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "checkURLAndHTML") {
-    console.log("📥 Received checkURLAndHTML message");
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action !== 'checkURLAndHTML') return;
 
-    const url = window.location.href;
-    const html = document.documentElement.outerHTML;
+  console.log('📥 Received checkURLAndHTML');
 
-    // Send data to background.js for analysis
-    chrome.runtime.sendMessage({
-      action: "checkUserURL",
-      url: url,
-      html: html
-    }, function (response) {
-      console.log("📤 Sent to background, received response:", response);
-      sendResponse(response); // ✅ SEND BACK TO POPUP
-    });
+  const url             = window.location.href;
+  const html            = document.documentElement.outerHTML;
+  const extractionDone  = Date.now();                  // finished gathering
 
-    return true; // ✅ Tell Chrome this will be async
-  }
+  chrome.runtime.sendMessage(
+    {
+      action        : 'checkUserURL',
+      url,
+      html,
+      // propagate timings
+      overallStart  : request.overallStart,
+      extractionDone
+    },
+    response => sendResponse(response)                 // bubble back to popup
+  );
+
+  return true; // async
 });
