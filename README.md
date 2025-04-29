@@ -31,7 +31,7 @@ An evaluation on the effectiveness of 5 LLMs and a weighted hybrid ensemble of t
 - **Input:** URL + partial HTML snippet
 - **Output:** Classify as `"PHISHING"` or `"LEGITIMATE"`
 
-### 5 Large Language Models Evaluated
+## 5 Large Language Models Evaluated
 - **Anthropic Claude-3.5 Sonnet**
 - **DeepSeek Chat**
 - **Google Gemini 1.5 Pro**
