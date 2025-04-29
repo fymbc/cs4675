@@ -1,16 +1,16 @@
 // ───────────────────────────────────────────────────────────
 // content.js — runs in the web page, extracts URL + HTML
 // ───────────────────────────────────────────────────────────
-console.log('✅ content.js loaded');
+console.log('content.js loaded');
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action !== 'checkURLAndHTML') return;
 
-  console.log('📥 Received checkURLAndHTML');
+  console.log('Received checkURLAndHTML');
 
   const url             = window.location.href;
   const html            = document.documentElement.outerHTML;
-  const extractionDone  = Date.now();                  // finished gathering
+  const extractionDone  = Date.now();                  
 
   chrome.runtime.sendMessage(
     {
@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       overallStart  : request.overallStart,
       extractionDone
     },
-    response => sendResponse(response)                 // bubble back to popup
+    response => sendResponse(response)               
   );
 
   return true; // async

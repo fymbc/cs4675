@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           t_content_to_background: 0,               // no content script
           t_background_to_backend: t_bg_to_backend,
           t_backend_to_background: t_backend_to_bg,
-          sentAt: Date.now(),                       // → popup
+          sentAt: Date.now(),                       
        },
       });
     })
@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     .then(data => {
       const fetchEnd = Date.now();
       const t_bg_to_backend   = fetchEnd - fetchStart;   // RTT
-      const t_backend_to_bg   = t_bg_to_backend;         // cannot split ⇡
+      const t_backend_to_bg   = t_bg_to_backend;         // cannot split
       const sentAt            = Date.now();              // for popup calc
 
       sendResponse({
@@ -89,7 +89,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         result:         data.ensemble_result,
         per_model_raw:  data.per_model_raw,
         metrics: {
-          // NB lower-case keys to avoid clash with chrome internals
           t_content_to_background: t_content_to_bg,
           t_background_to_backend: t_bg_to_backend,
           t_backend_to_background: t_backend_to_bg,

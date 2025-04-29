@@ -1,8 +1,3 @@
-// ───────────────────────────────────────────────────────────
-// popup.js — UI logic & client-side latency tables
-// ───────────────────────────────────────────────────────────
-
-/* helper — pretty-print metrics */
 function logTable(response, overallStart) {
   if (!response) return;
 
@@ -21,7 +16,7 @@ function logTable(response, overallStart) {
   return t_total;
 }
 
-/* ───────────────────────── Truthfulness button ─────────────────────────── */
+// truthfulness button
 document.getElementById('checkText').addEventListener('click', () => {
   const text = document.getElementById('textInput').value.trim();
   if (!text) {
@@ -40,11 +35,11 @@ document.getElementById('checkText').addEventListener('click', () => {
 
     const t_total = logTable(response, overallStart);
     document.getElementById('result').textContent =
-      `Result: ${response.result}  ⏱ ${t_total.toFixed(1)} ms`;
+      `Result: ${response.result}  ${t_total.toFixed(1)} ms`;
   });
 });
 
-/* ───────────────────────── URL-only button ─────────────────────────────── */
+// url-only button
 document.getElementById('checkURLOnly').addEventListener('click', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     const { url } = tabs[0];
@@ -65,12 +60,12 @@ document.getElementById('checkURLOnly').addEventListener('click', () => {
 
       const t_total = logTable(response, overallStart);
       document.getElementById('result').textContent =
-        `URL Result: ${response.result}  ⏱ ${t_total.toFixed(1)} ms`;
+        `URL Result: ${response.result}  ${t_total.toFixed(1)} ms`;
     });
   });
 });
 
-/* ───────────────────────── URL + HTML button ───────────────────────────── */
+// url+html button
 document.getElementById('checkURLAndHTML').addEventListener('click', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     const { id: tabId, url } = tabs[0];
@@ -82,7 +77,6 @@ document.getElementById('checkURLAndHTML').addEventListener('click', () => {
 
     const overallStart = Date.now();          // master clock
 
-    /* send message (with fallback injection) */
     const pingContent = () => chrome.tabs.sendMessage(
       tabId,
       { action: 'checkURLAndHTML', overallStart },
@@ -94,7 +88,7 @@ document.getElementById('checkURLAndHTML').addEventListener('click', () => {
         }
         const t_total = logTable(response, overallStart);
         document.getElementById('result').textContent =
-          `Result: ${response.result}  ⏱ ${t_total.toFixed(1)} ms`;
+          `Result: ${response.result}  ${t_total.toFixed(1)} ms`;
       }
     );
 
