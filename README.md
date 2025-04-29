@@ -18,26 +18,20 @@ An evaluation on the effectiveness of 5 LLMs and a weighted hybrid ensemble of t
 - **Endpoint:** `/analyze`
 - **Input:** Text truthfulness claim
 - **Output:** Classify claim as `"TRUE"` or `"FALSE"`
-- **Models Used:** Anthropic, DeepSeek, Gemini, GPT-4o
 
 ### URL-Only Phishing Detection API
 
 - **Endpoint:** `/analyze-url`
 - **Input:** Single URL
 - **Output:** Classify as `"PHISHING"` or `"LEGITIMATE"`
-- **Models Used:** Anthropic, DeepSeek, Gemini, GPT-4o
 
 ### URL + HTML Phishing Detection API
 
 - **Endpoint:** `/analyze-url-html`
 - **Input:** URL + partial HTML snippet
 - **Output:** Classify as `"PHISHING"` or `"LEGITIMATE"`
-- **Models Used:** Anthropic, DeepSeek, Gemini, GPT-4o
 
-### 5 Large Language Models Integrated
-
-| Model |
-|:------|
+### 5 Large Language Models Evaluated
 | **Anthropic Claude-3.5 Sonnet** |
 | **DeepSeek Chat** |
 | **Google Gemini 1.5 Pro** |
