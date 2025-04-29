@@ -18,6 +18,11 @@ LLAMA_MODEL = "meta-llama/Llama-3-8b-chat-hf"
 TOGETHER_URL = "https://api.together.xyz/v1/chat/completions"
 MAX_TOKENS = 10
 
+# Configure Llama client
+llama.configure(api_key=LLAMA_API_KEY)
+model = llama.LLMModel(LLAMA_MODEL)
+
+
 # ------------------------------------------------------------
 # Utility Functions
 # ------------------------------------------------------------
